@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  methada:
+    build: ./methada/
+    expose:
+      - "8888"
+    ports:
+      - "8888:8000"
+    volumes_from:
+      - home_dir
+    command: jupyterhub --ip 0.0.0.0 --port 8000
+    networks:
+      static-network:
+        ipv4_address: 172.22.0.2
+
+  home_dir:
+    restart: always
+    image: alpine
+    volumes:
+      - ./home:/home
+    command: "true"
+    networks:
+      static-network:
+        ipv4_address: 172.22.0.3
+
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+          gateway: 172.22.0.1
