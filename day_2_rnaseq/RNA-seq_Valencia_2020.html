@@ -1,0 +1,2160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Paolo Sonego" />
+  <title>Good practices for RNA-seq data analysis</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="RNA-seq_Valencia_2020_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+
+<link rel="stylesheet" href="RNA-seq_Valencia_2020_files/reveal.js-3.3.0.1/css/theme/sky.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+    <link rel="stylesheet" href="reveal.css"/>
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+    <link href="RNA-seq_Valencia_2020_files/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="RNA-seq_Valencia_2020_files/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Good practices for RNA-seq data analysis</h1>
+    <h2 class="author">Paolo Sonego</h2>
+    <h3 class="date">February 5th, 2020</h3>
+</section>
+
+<section id="basic-setup-for-reproducibility" class="slide level2">
+<h2>Basic setup for reproducibility</h2>
+<ul>
+<li><a href="https://www.docker.com/">Docker</a></li>
+<li><a href="https://ipython.org/ipython-doc/stable/notebook/index.html">Python</a>/<a href="https://jupyter.org/">Jupyter</a> Notebook or <a href="https://rmarkdown.rstudio.com/">RMarkdown</a></li>
+<li><a href="https://github.com/">Github</a></li>
+<li>Organize your data, scripts, resources</li>
+<li>Keep track of versions for both annotation and software used in the analysis</li>
+<li><a href="https://en.wikipedia.org/wiki/Literate_programming">Literate programming</a> paradigm for reproducible research by Donald E. Knuth</li>
+</ul>
+<aside class="notes">
+<p>Docker is a tool designed to make it easier to create, deploy, and run applications by using containers. Containers allow a developer to package up an application with all of the parts it needs, such as libraries and other dependencies, and ship it all out as one package. By doing so, thanks to the container, the developer can rest assured that the application will run on any other Linux machine regardless of any customized settings that machine might have that could differ from the machine used for writing and testing the code. </docker></p>
+</section>
+<section id="overview" class="slide level2">
+<h2>Overview</h2>
+<ul>
+<li><p>General issues</p>
+<ul>
+<li>What is RNA-seq and why do you want to perform a sequencing experiment?</li>
+<li>Data mining for gene epression experiments</li>
+<li>Issues in experimental design of a RNA-seq experiment</li>
+<li>Advices and tips for gene expression analysis</li>
+</ul></li>
+<li><p>Steps for the analysis of gene expression data</p>
+<ul>
+<li>From raw data (<em>FASTQ</em>) to counts</li>
+<li>From a counts matrix to lists of differentially expressed genes</li>
+<li>From a list of DE genes to biological inference</li>
+</ul></li>
+</ul>
+<aside class="notes">
+It is not intended as THE definitive guide to the analysis of RNA-Seq data but I’ll cover one of the possible workflow to the analysis of RNA-seq data,i.e., DE Anaslysis
+</aside>
+</section>
+<section id="what-is-rna-seq" class="slide level2">
+<h2>What is RNA-seq?</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/central_dogma.png" alt="Dogma" height="250" /><br />
+- RNA-Seq uses next-generation sequencing (NGS) to reveal the presence and quantity of RNA in a biological sample at a given moment - It allows to take a snapshot of a tissue/cell at a particular time and knowing which genes are expressed at that point<br />
+- It works by sequencing every RNA molecule and profiling the expression of a particular gene by counting the number of time its transcripts have been sequenced<br />
+- it is used as a proxy for the changes in the encoded proteins<br />
+- Why are we not doing protein profiling?<br />
+- Why are we not doing microarray (MA) instead of RNA-seq?</p>
+<aside class="notes">
+<strong>Central dogma of molecular biology</strong> - DNA (the molecules whic contains the instructions an organism need to develop, survive, reproduce) is transcribed in pre-mRNA which contains both exons (the unit that will translated into protein) and introns then, exons areconected together by cutting down introns via a process named Splicing an the continuous mature mRNA is translated into Protein. - Why we are not doing protein profiling? Isolate proteins and profile them is much more difficult and expensive. - The basic idea beyond this kind of experiment , i.e., (transcriptional profiling) is taking a snapshot… - Proteins are responsible for nearly every task of cellular life, including cell shape and inner organization, product manufacture and waste cleanup, and routine maintenance. -They are the workhorse macromolecules of the cell and are as diverse as the functions they serve. - They do most of the work in cells and are required for the structure, function, and regulation of the body’s tissues and organs.
+</aside>
+</section>
+<section id="rna-seq-library-construction" class="slide level2">
+<h2>RNA-seq library construction</h2>
+<!-- ![Illumina](/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/Illumina_sequencing.png) -->
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/library_prep_workflow.png" alt="library prepararion" height="300" /><br />
+<small> © <a href="https://peerj.com/preprints/27283/">Koen Van den Berge et al. (2019)</a> </small><br />
+<small> - After total RNA extraction from a sample of interest, rRNA is depleted (either using poly(A)-selection or rRNA depletion) and the remaining RNA molecules are fragmented ideally achieving a uniform size distribution (~300-500 bp)<br />
+- Single-stranded target RNA are reverse transcribed to cDNA<br />
+- Double-stranded cDNA is synthesized and the adapters for sequencing are added to construct the final library which will be carried out on a <a href="https://www.youtube.com/watch?v=fCd6B5HRaZ8">Illumina Sequencer Flow Cell</a> (Zeng and Mortazavi, 2012)* </small></p>
+<p><small> <sup>[*]</sup> Zeng,W. and Mortazavi,A. (2012) <em>Technical considerations for functional sequencing assays.</em> Nat Immunol, 13, 802–807. </small></p>
+<aside class="notes">
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/library_preparation_workflow.jpg" alt="library prepararion" height="300" /></p>
+<p>From transcript to short reads: 1. We start by selecting a population of cell/tissues 2. extract total RNA 3. then we select mRNA and fragments it 4. these are then converted to cDNA 5. adapters (i.e. oligo) are added to those to create a library for sequencing carred out on an Illumina Sequencer like the one on the left 6. Reads are mapped into the genome and quantified</p>
+<ol start="2" type="1">
+<li>mRNA enrichment: the total RNA pool extracted from typical cell contains about 80-85% rRNA and 10-15% Transfer ribonucleic acid (tRNA, help decode mRNA sequence into a protein). problematic if you are interested in protein-coding mRNA. To increase quantification of mRNA: (i) enrichment of poly-(A) containing mRNAs with the help of oligo-(dT) beads, or (ii) removal of ribosomal RNA via complementary sequences. The two strategies will yield different populations of RNA, therefore they should never be mixed within the same experiment!</li>
+</ol>
+<ul>
+<li>There is non way to sequence directly RNA at the moment (not true anymore with long read technology such as Oxford Nanopore)</li>
+<li>We can sequence it indirectly using DNA sequencing:</li>
+<li>DNA to RNA is transcription</li>
+<li>It turns out there is a similar process named reverse transcription</li>
+<li>RNA is converted back to DNA, better cDNA and then we sequence DNA having a proxy of the measurement</li>
+<li>We have multiple copies of different cDNA molecules, each cDNA molucule should correspond to a single RNA fragment.</li>
+<li><em>We chop up the cDNA into tiny pieces all the equally sized the we can sequence these pieces and generate read pairs, we have a fragment of known length separated by two reads on wither ends and we know the exact sequence of</em></li>
+<li>now we have reads , we are going to align them to the reference genome and see how many reads map to every single gene.</li>
+<li>Gene expression is when RNA transcribe from DNA ,i.e., the number of mRNA molecules that come from a specific gene should correspond directly to how many reads map to that gene, so we are going to use this number of reads mapping to a gene as a proxy for the count of actually fragments of that gene as RNA molecule and generate a counts matrix from this</li>
+</ul>
+<ol start="5" type="1">
+<li>cDNA synthesis: <em>RNA is reverse transcribed to cDNA because DNA is more stable and to allow for amplification (which uses DNA polymerases)</em> and leverage more mature DNA sequencing technology. Amplification subsequent to reverse transcription results in loss of strandedness, which can be avoided with chemical labeling or single molecule sequencing. Fragmentation and size selection are performed to purify sequences that are the appropriate length for the sequencing machine. The RNA, cDNA, or both are fragmented with enzymes, sonication, or nebulizers. Fragmentation of the RNA reduces 5’ bias of randomly primed-reverse transcription and the influence of primer binding sites,[11] with the downside that the 5’ and 3’ ends are converted to DNA less efficiently. Fragmentation is followed by size selection, where either small sequences are removed or a tight range of sequence lengths are selected. Because small RNAs like miRNAs are lost, these are analyzed independently. The cDNA for each experiment can be indexed with a hexamer or octamer barcode, so that these experiments can be pooled into a single lane for multiplexed sequencing.</li>
+</ol>
+</aside>
+</section>
+<section id="why-do-we-need-rna-seq" class="slide level2">
+<h2>Why do we need RNA-seq?</h2>
+<ul>
+<li><strong>Gene expression profiling: which genes are active and how much they are transcribed</strong></li>
+<li>Alternative splicing</li>
+<li>Detect novel transcripts</li>
+</ul>
+<aside class="notes">
+<img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/DNA_alternative_splicing.jpg" alt="AS" /> - <strong>Alternative splicing, or alternative RNA splicing is a regulated process during gene expression that results in a single gene coding for multiple proteins. In this process, particular exons of a gene may be included within or excluded from the final, processed messenger RNA (mRNA) produced from that gene. Consequently, the proteins translated from alternatively spliced mRNAs will contain differences in their amino acid sequence and, often, in their biological functions</strong>. Notably, alternative splicing allows the human genome to direct the synthesis of many more proteins than would be expected from its 20,000 protein-coding genes. RNA-seq data allow the analysis of splice events. - <em>AS analysis by deep sequencing requires splice‐aware programs capable of aligning transcripts reads to a reference genome while performing the difficult task of placing spliced reads across introns by determining the exon‐intron boundaries</em> - Novel transcript reconstruction and annotation. - Allele-specific expression of variants: - <strong>Allele-specific expression (ASE) refers to the characteristic of preferentially expressing a parental allele in the hybrid due to variations in regulatory sequences from the parental genomes (11). The expression difference caused by ASE may lead to phenotypic variation depending on the function of the genes.Mar 4, 2019</strong> -Allele-specific expression (ASE) refers to the phenomenon that occurs in diploid or polypoid genomes, where two or more alleles of a gene has an imbalanced expression (Kwaepila et al., 2006; Ge et al., 2009; Heap et al., 2010; Tung et al., 2011). It is common in both humans (Lo et al., 2003) and other organisms (Tung et al., 2011; Graze et al., 2012; Hasin-Brumshtein et al., 2014), and potentially contributes to multiple phenotypes and complex traits - In both this talk and tomorrow hands-on <strong>we will discuss how to use statistical methods to assess differential expression in RNA-seq data</strong>
+</aside>
+</section>
+<section id="gene-expression-data-analyses" class="slide level2">
+<h2>Gene expression data analyses</h2>
+<ul>
+<li>Class Discovery (Clustering):
+<ul>
+<li>Discover groups of genes with similar gene expression profiles</li>
+<li>Discover groups of samples with similar gene expression profiles</li>
+</ul></li>
+<li>Class Prediction (Classification):
+<ul>
+<li>Using gene expression profiles train an algorithm on samples with known class membership (training set) in order to establish a prediction rule to classify new samples (test set).</li>
+</ul></li>
+<li><strong>Class Comparison (Differential Expression):</strong>
+<ul>
+<li><strong>Identify over (up-regulated) and under (down-regulated) expressed genes in selected comparisons.</strong></li>
+</ul></li>
+</ul>
+</section>
+<section id="section" class="slide level2" data-transition="zoom">
+<h2></h2>
+<blockquote>
+<p>While a good design does not guarantee a successful experiment, a suitably bad design guarantees a failed experiment</p>
+</blockquote>
+<blockquote>
+<p>Kathleen Kerr</p>
+</blockquote>
+</section>
+<section id="general-advices" class="slide level2">
+<h2>General advices</h2>
+<ul>
+<li>There is no way to get meaningful results from data of bad quality coming from poorly designed experiments!</li>
+<li>Take away message:
+<ul>
+<li>Clearly define the biological question of interest</li>
+<li>Carefully design the experiment</li>
+<li>Always check the quality of experiments</li>
+</ul></li>
+</ul>
+<aside class="notes">
+Here we have some general advice related to Experimental design
+</aside>
+</section>
+<section id="garbage-in-garbage-out" class="slide level2" data-transition="zoom">
+<h2><em>Garbage in, Garbage out!</em></h2>
+</section>
+<section id="experimental-design-for-rna-seq" class="slide level2">
+<h2>Experimental Design for RNA-Seq</h2>
+<ul>
+<li>Technical or biological replicates?</li>
+<li>Higher sequencing depth (library size) or more replicates?</li>
+<li>How many samples I need (power calculation)?</li>
+<li>Single-end or paired-end?</li>
+<li>Stranded or unstranded?</li>
+</ul>
+<aside class="notes">
+It is the selection of the proper library type, sequencing depth and number of replicates for answering the biological question of interest
+</aside>
+</section>
+<section id="technical-or-biological-replicates" class="slide level2">
+<h2>Technical or biological replicates?</h2>
+<ul>
+<li><strong>Technical replicates:</strong>
+<ul>
+<li>Different library preparations from the same RNA sample (ENCODE consortium)</li>
+</ul></li>
+<li><strong>Biological replicates:</strong>
+<ul>
+<li>Samples representing population under analysis</li>
+<li>RNA from an independent growth of cells/tissue (ENCODE)</li>
+</ul></li>
+<li>Which replicates I need?
+<ul>
+<li><strong>Biological replicates are mandatory for statistical inference!</strong></li>
+<li>Technical replicates can be used to measure technical variation in the same biological sample</li>
+<li><strong>Technical replicates can not be a substitute to biological replicates!</strong></li>
+</ul></li>
+</ul>
+<aside class="notes">
+Biological variance is variance that naturally occurs within the samples under investigation. This variance stems from the fact that the expression of any given gene is likely to naturally fluctuate within the cells themselves, and between samples of the same condition. Sources of biological variance include genetic differences among samples and gene expression responses to the environment.
+</aside>
+</section>
+<section id="a-note-on-technical-replicates" class="slide level2">
+<h2>A note on technical replicates</h2>
+<ul>
+<li>Technical variation in count data, in the absence of any other substantial biases or technical effects, follows approximately a Poisson distribution, and the sum of independent Poisson-distributed variables is also Poisson distributed.</li>
+<li>This means <em>you can safely combine technical replicates by adding the counts with no loss of information, provided the assumptions hold.</em></li>
+</ul>
+</section>
+<section id="sequencing-depth-library-size" class="slide level2">
+<h2>Sequencing depth (library size)</h2>
+<ul>
+<li>Sequencing depth or library size refers to the number of sequenced reads for a given sample. As the sample is sequenced to a deeper level, the reads are likely to cover a larger proportion of the genome/transcriptome, allowing more transcripts to be detected with more precise quantification.</li>
+<li>Optimal sequencing depth depends on the aims of the experiment and on the complexity of the target transcriptome.</li>
+</ul>
+<aside class="notes">
+What is Coverage in NGS? Next-generation sequencing (NGS) coverage describes the average number of reads that align to, or “cover,” known reference bases. The sequencing coverage level often determines whether variant discovery can be made with a certain degree of confidence at particular base positions.
+</aside>
+</section>
+<section id="how-many-biological-replicates-i-need-power-and-sample-size-estimation" class="slide level2">
+<h2>How many biological replicates I need ? (power and sample size estimation)</h2>
+<ul>
+<li>Ideally best practice would suggest to apply methods of inferential statistics for selecting the number of samples that maximize the power of the analysis (reduce number of false negative without raise the number of false positive), e.g., Zhao, S., et al. (2018) <sup>*</sup></li>
+<li>Practically:
+<ul>
+<li>Biological material at disposal</li>
+<li>Funds for the experiment</li>
+</ul></li>
+<li>Same thing for the technology:
+<ul>
+<li>Trade-off between money and outcome</li>
+<li>technology at disposal in the facility lab</li>
+</ul></li>
+<li><strong>Ultimately RNA-seq is a hypothesis generating tool: the fist driver of sample size is the budget!</strong></li>
+</ul>
+<p><small><sup>*</sup> Zhao,S., Li,C.-I., Guo,Y., Sheng,Q. and Shyr,Y. (2018) RnaSeqSampleSize: real data based sample size estimation for RNA sequencing. BMC Bioinformatics, 19, 191. </small></p>
+<aside class="notes">
+Sample size calculators can compute the required number of samples to achieve a user defined power for detecting differential gene expression. However, the user must define many parameters, such as the expected alignment rate, the desired power, the significance level and the log fold change of differentially expressed genes. A recent study came to the conclusion that the recommended sample sizes vary from tool to tool, even when estimates from pilot data are available. Another issue with sample size calculators is that it might not be obvious how to precisely define the outcome: do we want to find as many DE genes as possible? Do we want a certain power for the lowly expressed genes or the highly expressed ones? In many cases, RNAseq experiments are exploratory and thus a means to further experimentation.
+</aside>
+</section>
+<section id="sequencing-depth-vs-biological-replicates" class="slide level2">
+<h2>Sequencing depth vs Biological Replicates</h2>
+<ul>
+<li>More sequence or more replication?</li>
+<li>Liu, Y., et al. [1] showed that:
+<ul>
+<li>for high expressed genes: increasing sequencing depth has little effect on increasing number of DE genes, while biological replicates are clearly more beneficial.</li>
+<li>for low expressed genes: both are beneficial. <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/depthvsreplicates.png" alt="library size vs replicates" width="500" /></li>
+</ul></li>
+</ul>
+<p><small>[1]1. Liu,Y., Zhou,J. and White,K.P. (2014) RNA-seq differential expression studies: more sequence or more replication? Bioinformatics, 30, 301–304.</small></p>
+</section>
+<section id="single-end-or-paired-end" class="slide level2">
+<h2>Single End or Paired End?</h2>
+<ul>
+<li>PE improve mapping for repetitive regions in the genome</li>
+<li>PE improve accuracy for detection of differential expression for low-expressed genes</li>
+<li>If the species of interest lacks of a reference genome and you need to assembly de novo a transcriptome, PE is a far better choice</li>
+</ul>
+<p>Take away message:</p>
+<ul>
+<li>SE is cheaper and sufficient for DE analysis allowing more biological replicates</li>
+<li>If you have specific needs:
+<ul>
+<li>identify novel transcripts</li>
+<li>alternative splicing event</li>
+</ul></li>
+</ul>
+<p>goes with PE and greater sequencing depth</p>
+<aside class="notes">
+<ul>
+<li>In SE sequencing there is only one read sequenced pre fragment it is either on one end of the fragment or on the other end</li>
+<li>In PE both ends can map, giving you two reads per fragments or sometimes only one end of the paired end has a quality reads and map, FPKM take into account you count just once and not twice</li>
+</ul>
+</aside>
+</section>
+<section id="stranded-vs-unstranded-library" class="slide level2">
+<h2>Stranded vs Unstranded library</h2>
+<ul>
+<li>RNA-seq libraries are generated by the synthesis of double stranded DNA followed by the addiction of sequencing adapters<br />
+</li>
+<li>Unstranded libraries don’t keep track of the direction of the transcription</li>
+<li>For stranded libraries only one strand from the cDNA synthesis is sequenced retaining directionality allowing the transcripts to be mapped back to the reference genome in a trans-specific manner</li>
+<li>Useful for people studying quantifying sense and anti sense transcription as well as resolving overlapping transcripts in small transcriptomes (bacteria)</li>
+</ul>
+<aside class="notes">
+<ul>
+<li><strong>adapters contains oligos which allows the hybridizaion with the complementary oligos on the lane of the flowcell in which the sequencing will be performed</strong></li>
+<li>Antisense RNA (asRNA), also referred to as antisense transcript is a single stranded RNA that is complementary to a protein coding messenger RNA (mRNA) with which it hybridizes, and thereby blocks its translation into protein.</li>
+<li>The DNA double helix consists of two complementary sequence strands. For any one sequence there is a sense and complementary antisense strand, e.g. 5’ ATTGCGCATT complements 3’ TAACGCGTAA. The sense strand is defined as that normally transcribed and translated into mRNA and protein respectively. Antisense transcription refers to the making of RNA from the antisense strand. This RNA will complement RNA made from the sense sequence, and as such may bind to it preventing protein translation</li>
+<li><strong>strand-specific sequencing</strong>: If you need to distinguish overlapping transcripts, e.g., when sequencing prokaryotic transcriptomes or because the aims of the RNA-seq experiment include the identification of anti-sense transcripts, the information about which strand a fragment originated from needs to be preserved during library preparation.</li>
+</ul>
+</aside>
+</section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+<p><em>“A strand-specific protocol should be used in library preparation to generate the most reliable and accurate profile of expression. Ideally PE reads are also recommended particularly for transcriptome assembly. Whilst SE reads produce a DEG list with around 5% of false positives and false negatives, this method can substantially reduce sequencing cost and this saving could be used to increase the number of biological replicates thereby increasing the power of the experiment. As SE reads, when used in association with gene set enrichment, can generate accurate biological results, this may be a desirable trade-off.”</em> <sup>*</sup></p>
+<p><small> <sup>*</sup> Susan M. Corley el al. (2017) <em>Differentially expressed genes from RNA-Seq and functional enrichment results are affected by the choice of single-end versus paired-end reads and stranded versus non-stranded protocols.</em> BMC Genomics, 18. </small></p>
+</section>
+<section id="sequencing-design" class="slide level2">
+<h2>Sequencing design</h2>
+<p>Avoid any confounding technical effect (day, Laboratory, lane, etc.) to the factor of interest.</p>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/lane_effect.png" alt="lane" /></p>
+<p><small> © Hugo Varet </small></p>
+</section>
+<section id="advice" class="slide level2">
+<h2>Advice</h2>
+<ul>
+<li>The biological question must be well defined in order to build an experimental design which will be able to address it.</li>
+<li>Identify all the sources of variability:
+<ul>
+<li>Change of biological condition</li>
+<li>Within replicates variability</li>
+<li>Experimentalist, laboratory or day to day library preparation</li>
+<li>Library effect (PE vs SE)</li>
+<li>Sequencing machine, flowcell and lane</li>
+<li>…</li>
+</ul></li>
+</ul>
+</section>
+<section id="batch-effect" class="slide level2">
+<h2>Batch effect</h2>
+<ul>
+<li>When you are not able to avoid the presence of non-biological factors in your experiment (bad design).</li>
+<li>It can be detected by EDA plots (e.g., PCA, MDS, Clustering).</li>
+<li>It can be incorporated in the statistical model in order to isolate only the effects of interest.</li>
+</ul>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/batch_PEvsSE.png" alt="batch" /></p>
+</section>
+<section id="analysis-of-gene-expression-data" class="slide level2">
+<h2>Analysis of Gene Expression Data</h2>
+</section>
+<section id="basic-analysis-workflow" class="slide level2">
+<h2>Basic analysis workflow</h2>
+<ol type="1">
+<li>Retrieve data from public databases</li>
+<li>Pre-process raw data (fastq)</li>
+<li>Alignment or mapping of raw/pre-processed data</li>
+<li>Summarise reads over genes to generate a count table</li>
+<li>Determine differentially expressed genes</li>
+<li>Gene enrichment analysis of lists of DE genes</li>
+</ol>
+</section>
+<section id="retrieve-data-from-on-line-databases" class="slide level2">
+<h2>Retrieve data from on line databases</h2>
+<ul>
+<li>NCBI Gene Expression Omnibus (<em>GEO</em>)</li>
+<li>EMBL-EBI <em>ArrayExpress</em> Archive of Functional Genomics Data</li>
+<li>NCBI Sequence Read Archive (<em>SRA</em>)
+<ul>
+<li>SRP - Study</li>
+<li>SRX - Experiment</li>
+<li>SRS - Sample</li>
+<li>SRR - Run</li>
+</ul></li>
+</ul>
+</section>
+<section id="fastq" class="slide level2">
+<h2>fastq</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/fastq_format.png" alt="fastq" /></p>
+<ul>
+<li>The quality at each position is captured as <em>Phred quality score</em>, a.k.a. as <em>Q score</em>, which is an integer value representing the estimated probability of an error, i.e. that the base is incorrect. If <span class="math inline">\(p\)</span> is the probability the base was called incorrectly, then <span class="math inline">\(Q = -10log_{10}p\)</span> or <span class="math inline">\(p = 10^{-Q/10}\)</span> .</li>
+<li>For example, if Phred assigns a quality score of 30 to a base, the chances that this base is called incorrectly are 1 in 1000.</li>
+<li>You can use either <a href="https://www.drive5.com/usearch/manual/quality_score.html">this</a> reference or the <a href="https://en.wikipedia.org/wiki/FASTQ_format">Wikipedia</a> page to figure out wich encodings was used for your data. Recent experiments should present a Sanger format (<em>Phred+33</em>).</li>
+</ul>
+<aside class="notes">
+<ol type="1">
+<li>Sequence information line (beginning with @)</li>
+<li>The DNA sequence (may be forward or reverse complemented relative to the reference genome/sequence)</li>
+<li>A + sign. Maybe followed by the sequence information line again</li>
+<li>The quality score, where each character represents a quality value that corresponds to the base in the same position of line 2. The higher a quality value, the more confident the sequencer was in calling the corresponding base</li>
+</ol>
+Line 4 is particularly elegant because a single character represents a range of quality values (usually between 0 and 41). This is cool because our decimal system requires two digits after the number 9, so using decimals would un-align the quality value from the base and create ambiguity without a delimiter (e.g. is 41 a quality score of 41 for one base or quality scores, 4 and 1, for two bases?). So to keep a single character representation, we simply shift down an ASCII table and remap our score values to these single characters.
+</aside>
+</section>
+<section id="fastqc---per-base-sequence-quality" class="slide level2">
+<h2>Fastqc - Per base sequence quality</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/per_base_quality_good.png" alt="good" height="350" /> <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/per_base_quality_bad.png" alt="bad" height="350" /></p>
+</section>
+<section id="fastqc---per-tile-sequence-quality" class="slide level2">
+<h2>Fastqc - Per tile sequence quality</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/per_tile_sequence_quality_good.png" alt="good" height="350" /> <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/per_tile_sequence_quality_bad.png" alt="bad" height="350" /></p>
+<p>take a look at either <a href="https://rtsf.natsci.msu.edu/genomics/tech-notes/fastqc-tutorial-and-faq/">this</a> guide, <a href="https://youtu.be/bz93ReOv87Y">this</a> video or the official <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/">documentation</a> for more details.</p>
+<aside class="notes">
+<ul>
+<li>This graph will only appear in your analysis results if you’re using an Illumina library which retains its original sequence identifiers. Encoded in these is the flowcell tile from which each read came. The graph allows you to look at the quality scores from each tile across all of your bases to see if there was a loss in quality associated with only one part of the flowcell.</li>
+<li>The plot shows the deviation from the average quality for each tile. The colours are on a cold to hot scale, with cold colours being positions where the quality was at or above the average for that base in the run, and hotter colours indicate that a tile had worse qualities than other tiles for that base. In the example below you can see that certain tiles show consistently poor quality. A good plot should be blue all over.</li>
+<li>Reasons for seeing warnings or errors on this plot could be transient problems such as bubbles going through the flowcell, or they could be more permanent problems such as smudges on the flowcell or debris inside the flowcell lane.</li>
+</ul>
+</aside>
+</section>
+<section id="trimming" class="slide level2">
+<h2>Trimming</h2>
+<ul>
+<li>Adapter Trimming
+<ul>
+<li>Should increase mapping rates</li>
+<li>Essential for smallRNA</li>
+<li>May improves de novo assemblies</li>
+</ul></li>
+<li>Quality Trimming
+<ul>
+<li>Should increase mapping rates</li>
+<li>loose information</li>
+<li>In paired reads if a read is removed, its pair has to be removed as well</li>
+</ul></li>
+<li>Lots of different tools (cutadapt, trimmomatic, …) and tuning parameters.</li>
+</ul>
+</section>
+<section id="to-trim-or-not-to-trim" class="slide level2">
+<h2>To Trim or not to Trim?</h2>
+<ul>
+<li>Liao, Y. and Shi, W. <sup>[*]</sup> found that adapter sequences can be effectively removed by the read aligner and many low-sequencing-quality bases, which would be removed by read trimming tools, were rescued by the aligner.</li>
+<li>Accuracy of gene expression quantification from using untrimmed reads was found to be comparable to or slightly better than that from using trimmed reads. This study suggests that read trimming is a redundant process in the quantification of RNA-seq expression data.</li>
+</ul>
+<p><small><sup>[*]</sup> Liao,Y. and Shi,W. (2019) Read trimming is not required for mapping and quantification of RNA-seq reads. bioRxiv, 10.1101/833962.</small></p>
+</section>
+<section id="section-2" class="slide level2" data-transition="zoom">
+<h2></h2>
+<p><strong>During the practical you are going to perform the analysis using either trimmed or untrimmed data.</strong></p>
+</section>
+<section id="alignment-and-mapping" class="slide level2">
+<h2>Alignment and Mapping</h2>
+<ul>
+<li>The number of reads that align/map to each gene provides a quantification of how many RNA transcripts of that gene were in the sample.</li>
+<li>The reads in the fastq files must first be aligned to a reference genome or transcriptome, or the abundances and estimated counts per transcript can be estimated without alignment. There are several choices for this step, see, for example <a href="https://www.nature.com/nmeth/journal/v14/n2/full/nmeth.4106.html">Baruzzo et al. 2017</a>:
+<ul>
+<li>alignement methods:
+<ul>
+<li>STAR</li>
+<li>Subread/Rsubread</li>
+</ul></li>
+<li>pseudo-alignement methods
+<ul>
+<li>Salmon</li>
+<li>Kallisto</li>
+</ul></li>
+</ul></li>
+</ul>
+<aside class="notes">
+After the sequence is read, the FASTQ file is most commonly aligned to a reference genome or transcriptome. This is done by matching up the sequence in the read with a matching (or nearly matching) sequence in the reference using an alignment tool. <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/aligned.png" alt="aligned" /> - <strong>The number of reads that align to each gene provides a quantification of how many RNA transcripts of that gene were in the sample.</strong> - <strong>When we align a read, we’re asking for not just where it likely came in the genome, but the exact base to base correspondence.</strong> For example, we’d like to get something like, “Read foo likely originated from chr1 positions 123 through 140. The first 7 bases are exact matches between foo and the reference, there’s then a 3 base insertion, then the remaining bases match between foo and the reference.” - **When we map a read, we’re just asking, “where did it come from?” We don’t necessarily care about the exact alignment between the read and where it came from, though.* Until recently, “alignment” and “mapping” were pretty much synonymous. Tools like Kallisto and Salmon have changed that, since they can assign reads to genes/features/whatever without needing to look at exact alignments. Since (A) this is faster and (B) we often don’t actually care about the alignment, this is a HUGE advantage in some applications. - The main reasons for the discrepancy is most likely that with TopHat you align against a genome whereas with <strong>Salmon you quantify against transcripts. The latter is much shorter and consist only of the known and expressed transcripts.</strong> I don’t think “mapping” is the right word when using a pseudo-aligner. Mapping reflects the coordinates. In contrast with Salmon the reads are assigned to transcripts. - <strong>The difference is basically with alignemnt you get (exact)coordinates instead with quasi-mapping (pseudo alignment) you get just the asignment of reads to transcript: read 1 belong to transcript X)</strong> - <strong>for de gene expression is enough to know how many reads maps to transcripts.</strong> - you do not need to be splice awared becuse you are mapping only on annotated transcripts
+</aside>
+</section>
+<section id="alignment-and-mapping-1" class="slide level2">
+<h2>Alignment and Mapping</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/mappings.png" alt="mapping" height="400" /></p>
+<p>What is the difference between aligning and mapping?</p>
+<aside class="notes">
+Q: My question may seem so simple. Could you tell me what is the difference between aligning and mapping the short reads to the reference genome? A: This turns out to be not so simple, so excellent question! When we align a read, we’re asking for not just where it likely came in the genome, but the exact base to base correspondence. For example, we’d like to get something like, “Read foo likely originated from chr1 positions 123 through 140. The first 7 bases are exact matches between foo and the reference, there’s then a 3 base insertion, then the remaining bases match between foo and the reference.” When we map a read, we’re just asking, “where did it come from?” We don’t necessarily care about the exact alignment between the read and where it came from, though. Until recently, “alignment” and “mapping” were pretty much synonymous. Tools like Kallisto and Salmon have changed that, since they can assign reads to genes/features/whatever without needing to look at exact alignments. Since (A) this is faster and (B) we often don’t actually care about the alignment, this is a HUGE advantage in some applications. - The main reasons for the discrepancy is most likely that with TopHat you align against a genome whereas with Salmon you quantify against transcripts. The latter is much shorter and consist only of the known and expressed transcripts.I don’t think “mapping” is the right word when using a pseudo-aligner. Mapping reflects the coordinates. In contrast with Salmon the reads are assigned to transcripts. - Their main difference is that reads are assigned to reference sequences without base‐to‐base alignment.
+</aside>
+</section>
+<section id="alignment" class="slide level2">
+<h2>Alignment</h2>
+<ul>
+<li>Build an index -&gt; convert genome FASTA file to a data structure which is faster to search</li>
+<li>Use splice-aware aligners for mapping RNA-Seq reads:
+<ul>
+<li>reads derived from mature mRNA, i.e., no introns in the sequence</li>
+<li>a read spans two exons where the reference see an exon and then an intron</li>
+<li>splice-aware aligners would not try to align reads to introns and will try to indentify downstream exons for the alignment <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/Aligner_spliced_aware.jpeg" alt="align" height="280" /> <small>The output of alignement tools is a BAM file, which is a compressed (“B”inary) form of a Sequence Alignment/Map format (SAM) file.</small></li>
+</ul></li>
+</ul>
+<aside class="notes">
+<p>Splice aware aligner - what does it mean? RNA-seq reads are derived from mature mRNA, so there’s typically no introns in the sequence. But aligners use a reference genome to aid in the process, so a read spans (what in the actual transcript are) two exons, while the reference would have one exon followed by an intron. So the reference genome would find a matching sequence in only one of the exons, while the rest of the read would not match the intron in the reference, so the read can’t be properly aligned. A splice-aware aligner would know not to try to align RNA-seq reads to introns, and would somehow identify possible downstream exons and try to align to those instead, ignoring introns altogether.</p>
+<p>Is this anywhere close to the meaning of splice-aware? And if so, would a splice-unaware aligner properly align RNA-seq data, given a reference transcriptome?</p>
+<p>Splice-aware aligners are not necessary when aligning to a transcriptome, only when aligning to a genome. A “splice-unaware” aligner will do a perfectly fine job of aligning to a transcriptome, with one caveat -</p>
+<p>Transcriptomes of alternatively-spliced organisms (basically, Eukaryota) are both incomplete (since not all transcripts have been identified), and highly redundant (since transcripts have multiple isoforms). Both of these cause problems with all aligners. It’s only one caveat, though, because splice-aware aligners encounter the same problems.</p>
+<p>If you align to a genome, which I always recommend, splice-aware aligners are required. The main advantage of aligning to a transcriptome is speed; genome alignment is much more scientifically valuable, as it starts with fewer assumptions.</p>
+Aligning to a reference genome If you are mapping your reads to a reference genome, you need an alignment tool that can allow for a read to be “split” between distant regions of the reference in the event that the read spans two exons. Since the sequencing library was constructed from transcribed RNA, intronic sequence was not present, and the sequenced molecule natively spanned exon boundaries. When aligning back to a reference genome we have to account for reads that may be split by potentially thousands of bases of intronic sequence. Some spliced aligners split reads across exons from no additional information (de novo spliced alignment), while others need intron/exon boundary annotations from the reference genome. Typically the intron/exon annotations are available in a GFF3 file or a GTF file. These files are usually available for download at the same location that you obtained your reference genome. Including intron/exon annotations with your RNA-seq alignment will significantly improve the quality of the alignments. Of course, if you are annotating a new genome assembly using your RNA-seq reads, you will need to use an aligner that can do de novo splicing – and most aligners can operate with or without annotation.
+</aside>
+</section>
+<section id="sambam" class="slide level2">
+<h2>SAM/BAM</h2>
+<ul>
+<li>The header section includes information about how the alignment was generated and stored.<br />
+<img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/sam_bam.png" alt="sam bam" height="400" /></li>
+</ul>
+</section>
+<section id="sambam-1" class="slide level2">
+<h2>SAM/BAM</h2>
+<p><small>The alignment section shows a sequence read for each line. For each read, there are 11 mandatory fields that always appear in the same order</small> <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/bam.png" alt="bam" /></p>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/bam_fields.png" alt="bam" width="400" /></p>
+<p><small>For a complete explanation of the format see <a href="https://github.com/samtools/hts-specs">SAM/BAM and related specifications</a><br />
+<code>samtools</code> is a powerful suite of tools designed to interact with SAM and BAM files (Li et al., 2009).</small></p>
+<aside class="notes">
+<ul>
+<li>You can check the bam header using: <code>samtools view -H filename.bam</code><br />
+</li>
+<li>the header section includes information about how the alignment was generated and stored.</li>
+<li>reference chromosomes and their lengths<br />
+</li>
+<li>which tool was used to generate the data<br />
+</li>
+<li>what parameters were used (exactly what is reported depends on mapper)<br />
+</li>
+<li>Schematic representation of a SAM file. Each line of the optional header section starts with “@”, followed by the appropriate abbreviation (e.g., SQ for sequence dictionary which lists all chromosomes names (SN) and their lengths (LN)). The vast majority of lines within a SAM file typically correspond to read alignments where each read is described by the 11 mandatory entries (black font) and a variable number of optional fields (grey font).</li>
+<li>If the corresponding information is unavailable or irrelevant, field values can be ‘0’ or ‘*’, but they cannot be missing! After the 11 mandatory fields, a variable number of optional fields can be present</li>
+</ul>
+</aside>
+</section>
+<section id="counting-reads-to-genes" class="slide level2">
+<h2>Counting reads to genes</h2>
+<ul>
+<li>Summarization is the process that assign mapped reads to genomic features such as genes, exons, etc.</li>
+<li>For gene-level differential expression the number of reads overlapping annotated exons of each gene can be used as a measure of the expression level of that gene.</li>
+<li>Methods that perform this tasks take as input a set of files that contain read mapping results (SAM/BAM) and an annotation file that includes genomic features (GFF/GTF) and return a read count for each gene in each sample, producing a matrix of read counts (integer).</li>
+</ul>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/raw_counts.png" alt="raw counts" /></p>
+</section>
+<section id="gffgtf" class="slide level2">
+<h2>gff/gtf</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/gtf2.png" alt="gtf" width="720" /> <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/gff_explained.png" alt="gff1" width="720" /></p>
+<p><small> <a href="https://en.wikipedia.org/wiki/General_feature_format">here</a> you can find more info about the two formats.</small></p>
+<aside class="notes">
+<img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/gtf_string.png" alt="gff2" width="720" />
+</aside>
+</section>
+<section id="htseq-count" class="slide level2">
+<h2>HTSeq count</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/count_modes.png" alt="gff" width="560" /><br />
+<small> See <a href="https://htseq.readthedocs.io/en/release_0.11.1/count.html">Counting reads in features with htseq-count</a> for more details.</small></p>
+</section>
+<section id="two-paths" class="slide level2">
+<h2>Two Paths</h2>
+<ul>
+<li>Transformations and Exploratory Data Analysis (EDA)</li>
+<li>Differential Expression Analysis</li>
+</ul>
+</section>
+<section id="esploratory-data-analysis-eda" class="slide level2">
+<h2>Esploratory Data Analysis (EDA)</h2>
+<ul>
+<li>Transformations
+<ul>
+<li>Within sample transformations</li>
+<li>Transformations for EDA</li>
+</ul></li>
+<li>Visualizations
+<ul>
+<li>Scatterplot</li>
+<li>PCA/MDS</li>
+<li>Clustering</li>
+<li>MA-plot (Mean-Difference MD-plot)</li>
+</ul></li>
+</ul>
+</section>
+<section id="within-sample-transformations" class="slide level2">
+<h2>Within sample transformations</h2>
+<p>This kind of transformations try to deal with bias present in comparing different genes within a sample, they take care of the facts that:<br />
+- Sequencing runs with more depth will have more reads mapping to each gene (“Million part”)<br />
+- Longer genes will have more reads mapping to them (“Kilobase part”)</p>
+<ul>
+<li>Counts per million (CPM): counts are divided by the library size (in millions)</li>
+</ul>
+<p><span class="math inline">\(\small{CPM_i=\frac{\frac{X_i}{N}}{10^6}=\frac{X_i}{N} . 10^6}\)</span></p>
+<ul>
+<li>Reads/fragments per kilobase per million (RPKM/FPKM): counts are divided by the transcript length (kb) times the total number of millions of mapped reads</li>
+</ul>
+<p><span class="math inline">\(\small{FPKM_i=\frac{X_i}{ \Big(\frac{\tilde{l_i}}{10^3}\Big)\Big(\frac{N}{10^6}\Big)}=\frac{X_i}{\tilde{l_i}N} . 10^9}\)</span></p>
+<aside class="notes">
+<ul>
+<li><strong>TPM, CPM, RPKM/FPKM are all within samples transformation, i.e. they allow comparisons of gene expression only within the same sample no between samples!</strong></li>
+<li>Counts per million (CPM) mapped reads are counts scaled by the number of fragments you sequenced (N) times one million. This unit is related to the FPKM without length normalization and a factor of 10^3:</li>
+<li><strong>The realtive expression of a transcript is proportional to the number of cDNA fragments that originates from it</strong></li>
+<li>The interpretation of FPKM is as follows: if you were to sequence this pool of RNA again, you expect to see _i fragments for each thousand bases in the feature for every N/10^6 fragments you’ve sequenced. It’s basically just the rate of fragments per base multiplied by a big number (proportional to the number of fragments you sequenced) to make it more convenient.</li>
+<li>The measure RPKM (reads per kilobase of exon model per million reads) is a within-sample normalization method that will remove the feature-length and library-size effects. This measure and its subsequent derivatives FPKM (fragments per kilobase of exon model per million mapped reads), a within-sample normalized transcript expression measure analogous to RPKs, and TPM (transcripts per million) are the most frequently reported RNA-seq gene expression values. It should be noted that RPKM and FPKM are equivalent for SE reads -The dichotomy of within-sample and between-sample comparisons has led to a lot of confusion in the literature. <strong>Correcting for gene length is not necessary when comparing changes in gene expression within the same gene across samples</strong>, but it is necessary for correctly ranking gene expression levels within the sample to account for the fact that longer genes accumulate more reads.</li>
+<li><p>TPMs, which effectively normalize for the differences in composition of the transcripts in the denominator rather than simply dividing by the number of reads in the library, are considered more comparable between samples of different origins and composition but can still suffer some biases that must be addressed with normalization techniques such as TMM.</p></li>
+<li><p>Transcripts per million (TPM) measures the proportion of transcripts in your pool of RNA: &gt;for every 1,000,000 RNA molecules in the RNA-seq sample, x came from this gene/transcript.</p></li>
+</ul>
+<p><span class="math inline">\(\small{TPM_i=\frac{X_i}{l_i} . \frac{1}{\sum_{j}\frac{X_j}{l_k}} . 10^6 }\)</span></p>
+</aside>
+</section>
+<section id="transformations-for-eda" class="slide level2">
+<h2>Transformations for EDA</h2>
+<ul>
+<li>Common methods for exploratory analysis of multidimensional data work best for data with the same range of variance at different ranges of the mean values</li>
+<li>When the expected amount of variance is approximately the same across different mean values, the data is said to be <em>homoskedastic</em></li>
+<li>In RNA-seq raw counts the variance grows with the mean</li>
+<li>Transformations for count data that stabilize the variance across the mean are:
+<ul>
+<li>regularized-logarithm transformation (<em>rlog</em>)</li>
+<li>variance stabilizing transformation (<em>vst</em>)</li>
+</ul></li>
+<li><em>rlog/vst</em>-transformed data become approximately homoskedastic, and can be used directly for computing distances between samples, allowing Clustering and PCA</li>
+<li>Used just for EDA <strong>NOT</strong> for differential testing</li>
+</ul>
+<aside class="notes">
+<ul>
+<li>rlog transforms the count data to the log2 scale in a way which minimizes differences between samples for rows with small counts, and which normalizes with respect to library size.</li>
+<li>For genes with high counts, the rlog transformation will give similar result to the ordinary log2 transformation of normalized counts. For genes with lower counts, however, the values are shrunken towards the genes’ averages across all samples. Using an empirical Bayesian prior on inter-sample differences in the form of a ridge penalty, the rlog-transformed data then becomes approximately homoskedastic, and can be used directly for computing distances between samples and making PCA plots.</li>
+</ul>
+</aside>
+</section>
+<section id="eda---scatterplots" class="slide level2">
+<h2>EDA - Scatterplots</h2>
+<ul>
+<li>The scatterplot is the most frequently used plot when you want to compare samples and understand the nature of relationship between two variables.</li>
+<li>Scatterplots are useful when you are looking for abnormal behavior: the samples can be too different between them but also they can be too similar!</li>
+</ul>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/scatterplots.png" alt="scatterplots" width="350" /></p>
+</section>
+<section id="eda---pca" class="slide level2">
+<h2>EDA - PCA</h2>
+<ul>
+<li>Principal component analysis (PCA) allows us to summarize the information in a data set containing observations described by multiple inter-correlated quantitative variables</li>
+<li>PCA is used to extract the important information from a multivariate data table and to express this information as a set of few new variables called principal components</li>
+<li>These new variables correspond to a linear combination of the original features</li>
+<li>The number of principal components is less than or equal to the number of original variables</li>
+<li>The information in a given data set corresponds to the total variation it contains: the goal of PCA is to identify directions along which the variation in the data is maximal</li>
+<li>PCA reduces the dimensionality of a multivariate data to two or three principal components, that can be visualized graphically</li>
+<li><strong>Counts must be transformed (made homoskedastic) before building the PCA.</strong></li>
+</ul>
+</section>
+<section id="eda---pca-1" class="slide level2">
+<h2>EDA - PCA</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/PCA01.png" alt="PCA" /></p>
+</section>
+<section id="mean-difference-plot" class="slide level2">
+<h2>Mean-Difference Plot</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/PLOTMD.jpg" alt="PCA" width="560" /></p>
+<aside class="notes">
+An MA-plot of changes induced by treatment. The log2 fold change for a particular comparison is plotted on the y-axis and the average of the counts normalized by size factor is shown on the x-axis (“M” for minus, because a log ratio is equal to log minus log, and “A” for average). Each gene is represented with a dot. Genes with an adjusted p value below a threshold (here 0.1, the default) are shown in red.
+</aside>
+</section>
+<section id="filtering" class="slide level2">
+<h2>Filtering</h2>
+<ul>
+<li>Genes that have very low counts across all the libraries should be removed prior to downstream analysis</li>
+<li>From a <em>biological point of view</em>, a gene must be expressed at some minimal level before it is likely to be translated into a protein or to be considered biologically important</li>
+<li>From a <em>statistical point of view</em>, genes with consistently low counts are very unlikely be assessed as significantly DE because low counts do not provide enough statistical evidence for a reliable judgement to be made</li>
+<li>Filtering, as side effect, allows to better deal with the multiple testing issue related to the statistical tests used to determine differentially expressed genes</li>
+</ul>
+</section>
+<section id="filtering-1" class="slide level2">
+<h2>Filtering</h2>
+<ul>
+<li>Remove all genes having zero reads in all samples</li>
+<li>Filter genes that are less then <span class="math inline">\(n\)</span> reads counts across a certain number of samples, e.g., require at least 1 CPM in at least 3 samples to keep (with 3 replicates for condition)</li>
+<li>A CPM value of 1 means that a gene is <em>expressed</em> if it has at least 20 counts in the sample with library size ~ 20 million</li>
+<li>Alternatively: filter based on minimum variance across all samples, so if a gene isn’t changing (constant expression) its not interesting and no need to be tested</li>
+</ul>
+<aside class="notes">
+From a practical point of view the default procedure for filtering follows these steps:
+</aside>
+</section>
+<section id="normalization" class="slide level2">
+<h2>Normalization</h2>
+<ul>
+<li>Identify and correct for systematic technical bias and make the counts comparable between samples</li>
+<li>Mandatory for any kind of <em>-omics</em> (data) analysis</li>
+<li>Normalization assumptions tailored to gene expression data (both MA and RNA-seq):
+<ol type="1">
+<li>The majority of the genes is not differentially expressed between contrasts</li>
+<li>As many down- as up-regulated genes</li>
+</ol></li>
+</ul>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/boxplots.jpg" alt="boxplot" width="480" /></p>
+</section>
+<section id="composition-bias" class="slide level2">
+<h2>Composition bias</h2>
+<p><em>“Estimated normalization factors should ensure that a gene with the same expression level in two samples is not detected as differentially expressed. Imagine we have a sequencing experiment comparing two RNA populations, A and B. Suppose every gene that is expressed in B is expressed in A with the same number of transcripts. However, assume that sample A also contains a set of genes equal in number and expression that are not expressed in B. Thus, sample A has twice as many total expressed genes as sample B, that is, its RNA production is twice the size of sample B. Suppose that each sample is then sequenced to the same depth. Without any additional adjustment, a gene expressed in both samples will have, on average, half the number of reads from sample A, since the reads are spread over twice as many genes. Therefore, the correct normalization would adjust sample A by a factor of 2.”</em></p>
+<p><small><a href="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-3-r25">Robinson,M.D. and Oshlack,A. (2010) A scaling normalization method for differential expression analysis of RNA-seq data. Genome Biology, 11, R25.</a></small></p>
+</section>
+<section id="normalization-by-trimmed-mean-of-m-values-tmm" class="slide level2">
+<h2>Normalization by trimmed mean of M-values (TMM)</h2>
+<ul>
+<li>TMM Normalization calculates a set of normalization factors, one for each sample, to eliminate composition biases between libraries</li>
+<li>The product of these factors and the library sizes defines the effective library size, which replaces the original library size in all downstream analyses</li>
+<li>The normalization factors of all the libraries multiply to unity.</li>
+<li>A normalization factor below one indicates that a small number of high count genes are monopolizing the sequencing, causing the counts for other genes to be lower than would be usual given the library size</li>
+<li>As a result, the effective library size will be scaled down for that sample</li>
+</ul>
+</section>
+<section id="differential-expression" class="slide level2">
+<h2>Differential Expression</h2>
+</section>
+<section id="memento-mori" class="slide level2">
+<h2>MEMENTO MORI</h2>
+<blockquote>
+<p>To consult the statistician bioinformatician after an experiment is finished is often merely to ask him to conduct a post mortem examination. He can perhaps say what the experiment died of.</p>
+</blockquote>
+<blockquote>
+<p>Sir Ronald Fisher (1890-1962)</p>
+</blockquote>
+</section>
+<section id="statistical-tests" class="slide level2">
+<h2>Statistical tests</h2>
+<ul>
+<li>Make inference about the population beyond the data</li>
+<li>Check if statistics (e.g. averages) between groups of interests are reliably different from each other</li>
+<li>Measure the difference between the groups and compare it with the difference within the group</li>
+<li>Provide a confidence measure (p-value, confidence interval) for the evaluated statistics</li>
+</ul>
+<aside class="notes">
+All statistical tests starts: - making inference …
+</aside>
+</section>
+<section id="statistical-tests-for-de" class="slide level2">
+<h2>Statistical tests for DE</h2>
+<ul>
+<li>For each gene, is the mean expression level under one condition significantly different from the mean expression level under a different condition?</li>
+<li>Use negative binomial distribution to <strong>model the counts</strong> directly:
+<ul>
+<li><code>edgeR</code></li>
+<li><code>DESeq2</code></li>
+<li>…</li>
+</ul></li>
+<li><strong>Transform the counts</strong> to be normally distributed using precision weights and then use normal-based methods
+<ul>
+<li><code>limma voom</code></li>
+</ul></li>
+<li><strong>Statistical tests rely on approximations: e.g., for gene expression profiling assume that the majority of the transcriptome is unchanged between the two conditions. If this assumption is not met by the data, results are not reliable!</strong></li>
+</ul>
+<aside class="notes">
+Williams et al 2017 shows that the choice of DE tool has more impact compared to the choice of aligner or pre-preprocessing procedure.
+</aside>
+</section>
+<section id="why-limma-voom" class="slide level2">
+<h2>Why limma + voom?</h2>
+<ul>
+<li>Same procedure for the analysis of both microarray and RNA-Seq data</li>
+<li>Designed and developed specifically for experiments with few biological replicates</li>
+<li>Accurate, e.g. see <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91">Soneson, C., Delorenzi ( 2013)</a></li>
+<li>Robust and reliable (It has been developed since 2003)</li>
+<li>Voom transformation was specifically designed for dealing with RNA-Seq data (since 2011)</li>
+</ul>
+</section>
+<section id="downstream-analysis-workflow" class="slide level2">
+<h2>Downstream analysis workflow</h2>
+<ul>
+<li>Experimental design (design matrix and contrast matrix)</li>
+<li>Trimmed Mean of M-values (TMM) normalization</li>
+<li>Voom transformation</li>
+<li>Statistical test - linear modelling (limma)</li>
+</ul>
+</section>
+<section id="voom-transformation" class="slide level2">
+<h2>Voom transformation <sup>*</sup></h2>
+<ul>
+<li>Unlike methods that model counts using a negative binomial distribution, limma performs linear modelling on the <span class="math inline">\(log_2(CPM)\)</span> transformed values assumed to be normally distributed and the relationship between mean and variance is taken care using precision weights calculated by the voom function</li>
+<li>The read counts of gene <span class="math inline">\(g\)</span> in sample <span class="math inline">\(s\)</span> do not follow a normal distribution however the (<span class="math inline">\(log_2(CPM)\)</span>) transformed response variable converges quickly to normality</li>
+<li>Voom models the log counts per million and fits a loess trend line (robust against highly variable genes) to the scatterplot of variance vs. mean to create weight that are then fed into a standard linear model analysis</li>
+</ul>
+<p><sup>*</sup> Law,C.W., Chen,Y., Shi,W. and Smyth,G.K. (2014) voom: precision weights unlock linear model analysis tools for RNA-seq read counts. Genome Biology, 15, R29</p>
+</section>
+<section id="qc---voom-plots" class="slide level2">
+<h2>QC - Voom plots</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/voom_plots.png" alt="mean variance voom" height="350" /> <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/plotSA.png" alt="mean variance voom 2" height="350" /></p>
+<ul>
+<li><small>Left image: means (x-axis) and variances (y-axis) of each gene are plotted to show the dependence between the two before voom is applied to the data</small></li>
+<li><small>Right image: how the trend is removed after voom precision weights are applied to the data: plots log2 residual standard deviations against mean <span class="math inline">\(log_2(CPM)\)</span> values</small></li>
+<li><small>Moreover, the voom-plot provides a visual check on the level of filtering performed upstream. If filtering of lowly-expressed genes is insufficient, a drop in variance levels can be observed at the low end of the expression scale due to very small counts</small></li>
+</ul>
+</section>
+<section id="statistical-testing" class="slide level2">
+<h2>Statistical testing</h2>
+<ul>
+<li>The Null hypothesis (<span class="math inline">\(H_0\)</span>) is the mean (or an other statistics) of gene expression for a specific comparison does not change</li>
+<li>Alternative hypothesis (<span class="math inline">\(H_1\)</span>) is that the gene expression can be higher or lower</li>
+<li>We repeat the test for all the genes in the specific samples</li>
+<li>Multiple comparisons problem (Look-elsewhere effect) arises</li>
+</ul>
+<aside class="notes">
+We go Back to the statistical test issue if you do 100 statistical tests, and for all of them the null hypothesis is actually true, you’d expect about 5 of the tests to be significant at the P&lt;0.05 level (there’s a 5% chance of getting your observed result), just due to chance. In that case, you’d have about 5 statistically significant results, all of which were false positives
+</aside>
+</section>
+<section id="section-3" class="slide level2">
+<h2></h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/significant.png" alt="significant" height="600" /></p>
+</section>
+<section id="familywise-error-rate-fwe-and-type-i-error" class="slide level2">
+<h2>Familywise Error rate (FWE) and type I error</h2>
+<ul>
+<li><strong>Type I error</strong> = is the incorrect rejection of the <span class="math inline">\(H_0\)</span>, when the null hypothesis is in fact <em>true</em> in the population</li>
+<li>The FWE rate is the probability of a coming to at least one false conclusion in a series of hypothesis tests, i.e., the probability of making at least one type I error</li>
+<li>The common practice is to test a null hypothesis with a maximum type I error of 5% (<span class="math inline">\(p-value \leq 0.05\)</span>)</li>
+<li>If you apply multiple statistical test on the same data the formula for FWE is: <span class="math inline">\(\alpha_{FW} \leq 1 - (1 -\alpha_{IT})^c\)</span> with<br />
+<span class="math inline">\(\alpha_{IT}\)</span> = alpha level for an individual test (e.g. .05)<br />
+c = Number of comparisons<br />
+</li>
+<li>For example with an <span class="math inline">\(\alpha\)</span> level of 5% and a series of ten tests, the FWER is: <span class="math inline">\(FWE = \leq 1 – (1 – .05)^{10} = .401\)</span> This means that the probability of a type I error is just over 40% (high considering only ten tests were performed)</li>
+</ul>
+</section>
+<section id="multiple-testing-for-gene-expression" class="slide level2">
+<h2>Multiple testing for gene expression</h2>
+<ul>
+<li>If you test <span class="math inline">\(~ 30,000\)</span> genes for differential gene expression, and you use a significance cut off of <span class="math inline">\(p&lt;0.05\)</span>, then you should expect to call approximately 1500 (i.e., 5% of 30000) genes to show differential expression just by chance<br />
+</li>
+<li>If your list of differentially expressed genes at <span class="math inline">\(p&lt;0.05\)</span> contains 1500 genes, then
+<ul>
+<li>either there are no genes differentially expressed between the two conditions or</li>
+<li>your experiment does not have a sufficient number of replicates for recognize true DE genes (underpowered)</li>
+</ul></li>
+<li>Taking care of this issue by
+<ul>
+<li>Non-specific filtering</li>
+<li>Multiple test correction (Bonferroni, B-H adjusted P-Value, etc.)</li>
+</ul></li>
+</ul>
+<aside class="notes">
+<ul>
+<li><strong>The most common way to control the familywise error rate is with the Bonferroni correction. You find the critical value (alpha) for an individual test by dividing the familywise error rate (usually 0.05) by the number of tests. Thus if you are doing 100 statistical tests, the critical value for an individual test would be 0.05/100=0.0005, and you would only consider individual tests with P&lt;0.0005 to be significant.</strong></li>
+</ul>
+</aside>
+</section>
+<section id="why-a-p-value-leq-0.05" class="slide level2">
+<h2>Why a <span class="math inline">\(p-value \leq 0.05\)</span> ?</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/p_values.png" alt="p_values" height="500" /> <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/batman_robin.jpg" alt="batman robin" height="500" /></p>
+<aside class="notes">
+<ul>
+<li>The choice of the cut-off point to accept the alternative hypothesis (same as rejecting the null hypothesis) is totally arbitrary. The commune use of <span class="math inline">\(p \leq 0.05\)</span> was chosen by Fisher. He believed one chance out of twenty a sufficiently low probability for us to take the risk of betting on but argued that each scientific could set his own cut-off point.</li>
+<li>p-values provide a precise estimate of the probability of the null hypothesis been true. It therefore provides an indication on the internal validity of our efforts to prove our alternative hypothesis as being wrong. Rejecting the null hypothesis seems to be easier to justify with a p=0.000000004 than for p=0.0499999. We however have to keep in mind that p-values do not provide any indication on the probability of the assumption of association of been true, they do not provide any indication on the magnitude of differences, and provides no indication on the probability of wrongly accepting the null hypothesis. Reporting CI95%, R^2 is therefore much more informative.</li>
+</ul>
+</aside>
+</section>
+<section id="statistical-modeling---linear-modeling" class="slide level2">
+<h2>Statistical Modeling - linear modeling</h2>
+<ul>
+<li>Explain a dependent variable <span class="math inline">\(Y\)</span> thanks to a set a explicative variables <span class="math inline">\(X = (X_1 , ..., X_n )\)</span> using the model:</li>
+</ul>
+<p><span class="math inline">\(Y = \beta X + \epsilon\)</span></p>
+<ul>
+<li>Estimations of parameters <span class="math inline">\(\beta_1 , ..., \beta_n\)</span> : effect of each explicative variable on <span class="math inline">\(Y\)</span></li>
+</ul>
+</section>
+<section id="design-and-contrast-matrices" class="slide level2">
+<h2>Design and contrast matrices</h2>
+<ul>
+<li>The <em>design matrix</em> links each group to the samples that belong to it.</li>
+</ul>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/design_matrix.png" alt="design matrix" width="620" /></p>
+<ul>
+<li><p>The <em>contrast matrix</em> specifies the comparisons of interest between groups (<strong>group-means parametrization</strong>)</p>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/contrast_matrix2.png" alt="density" width="620" /></p></li>
+</ul>
+<aside class="notes">
+<ul>
+<li>The <em>design matrix</em> links each group to the samples that belong to it.</li>
+<li>Each row of the design matrix corresponds to a sample whereas each column represents a coefficient corresponding to one of the six groups.</li>
+<li>There are two different ways to form the design matrix. We can either</li>
+</ul>
+<ol type="1">
+<li><strong>treatment-contrasts parametrization</strong>: create a design matrix which includes a coefficient for the mutant vs wild type difference, or</li>
+<li><strong>group-means parametrization</strong>: create a design matrix which includes separate coefficients for wild type and mutant mice and then extract the difference as a contrast using</li>
+</ol>
+<ul>
+<li>The <em>contrast matrix</em> which specifies which comparisons you would like to make between the RNA samples.</li>
+</ul>
+</aside>
+</section>
+<section id="design-matrix" class="slide level2">
+<h2>Design matrix</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Sample</th>
+<th>Treatment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sample 1</td>
+<td>Control</td>
+</tr>
+<tr class="even">
+<td>Sample 2</td>
+<td>Treatment</td>
+</tr>
+<tr class="odd">
+<td>Sample 3</td>
+<td>Control</td>
+</tr>
+<tr class="even">
+<td>Sample 4</td>
+<td>Treatment</td>
+</tr>
+<tr class="odd">
+<td>Sample 5</td>
+<td>Control</td>
+</tr>
+<tr class="even">
+<td>Sample 6</td>
+<td>Treatment</td>
+</tr>
+</tbody>
+</table>
+<p><small><span class="math display">\[ \left[\begin{array}
+{rrr}
+S1  \\
+S2  \\
+S3  \\
+S4  \\
+S5  \\
+S6  \\ 
+\end{array}\right] = \left(\begin{array}{rrr}
+0 \ 1 \\
+1 \ 0 \\
+0 \ 1 \\
+1 \ 0 \\
+0 \ 1 \\
+1 \ 0 \\ 
+\end{array}\right) . \left[\begin{array}{rrr}
+C \\
+T  
+\end{array}\right]
+\]</span> </small></p>
+<p>C = average expression of Control<br />
+T = average expression of Treatment<br />
+2 levels, 6 samples, 1 contrast</p>
+</section>
+<section id="contrast-matrix" class="slide level2">
+<h2>Contrast matrix</h2>
+<p>A contrast matrices allow us to estimate (and test) linear combinations of our coefficients.</p>
+<p><span class="math display">\[ \left[\begin{array}
+{rrr}
+1 \ -1  \\
+\end{array}\right] . \left[\begin{array}{rrr}
+\hat{T} \\
+\hat{C}  
+\end{array}\right] = \widehat{T - C}
+\]</span></p>
+</section>
+<section id="limma-fitting" class="slide level2">
+<h2>Limma fitting</h2>
+<ul>
+<li>Fitting a separate linear model to the expression values for each gene</li>
+<li>ebayes moderated t-test which borrow information across all genes to obtain precise estimate of gene-wise variability</li>
+<li>The method: voom transformation + linear modeling aims to remove the dependency of the variance from the mean expression level and apply a statistical test (moderated t-test) robust and accurate tailored to experiments with few biological replicates</li>
+</ul>
+<aside class="notes">
+<ol type="1">
+<li>For every sample and gene, calculate thelogCPM</li>
+<li>Fit a linear model to the logCPM values taking the experimental design into account (conditions, batches)</li>
+<li>Using the residual standard deviations for every gene to fit a global mean-variance trend across all gene and samples</li>
+<li>To get a “precision weight” for single gene observation (for every sample) the fitted logCPM values from step 2 are used to predict the counts for every gene and every sample. The mean-variance trend (step 3) is then used to interpolate the corresponding standard deviation for these predicted counts</li>
+<li>The squared inverse of this observation-wise estimated standard deviation is used as a penalty (inverse weight) during the test for DE. These penalty are the “precision weights”</li>
+</ol>
+</aside>
+</section>
+<section id="limma-output" class="slide level2">
+<h2>Limma output</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/tt_table.png" alt="limma tT" height="350" /></p>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/tT_explained.png" alt="limma tT2" height="150" /></p>
+<aside class="notes">
+<ul>
+<li>The logFC columns gives the value of the contrast, a log2-fold change between two experimental conditions</li>
+<li>AveExpr gives the average log2-expression level for tha gene across all the samples in the experiment</li>
+<li>The B-statistic is the log-odds that the gene is differentially expressed. Suppose for example that B = 1.5. The odds of differential expression is exp(1.5) = 4.48, i.e, about four and a half to one. The probability that the gene is differentially expressed is 4.48/(1 + 4.48) = 0.82, i.e., the probability is about 82% that this gene is differentially expressed.</li>
+<li>A B-statistic of zero corresponds to a 50-50 chance that the gene is differentially expressed.
+</aside></li>
+</ul>
+</section>
+<section id="visualize-de-analysis-results" class="slide level2">
+<h2>Visualize DE analysis results</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/volcano.png" alt="volcano" height="500" /><br />
+<a href="https://paolo.shinyapps.io/ShinyVolcanoPlot/">ShinyVolcanoPlot WebApp</a></p>
+</section>
+<section id="caveat" class="slide level2">
+<h2>Caveat</h2>
+<blockquote>
+<p>Results of any analysis must be evaluated in the context of the biological knowledge.<br />
+J. Quackenbush</p>
+</blockquote>
+<ul>
+<li><strong>Statistical significance does not imply biological significance!</strong></li>
+<li>If your results are suggesting expression changes drammatically different from everything you would have expected base on literature and previous knowledge, be very cautious!</li>
+<li>The <strong>exploratory</strong> nature of gene expression experiments requires external validation:
+<ul>
+<li>More experiments</li>
+<li>Orthogonal validation with different methods (e.g. western blot, RT-qPCR - one gene approach)</li>
+<li>Combine results from multiple studies for increase power: meta-analysis</li>
+</ul></li>
+</ul>
+<aside class="notes">
+<strong>Ultimately RNA-seq is a hypothesis generating tool!</strong>
+</aside>
+</section>
+<section id="beyond-gene-lists" class="slide level2">
+<h2>Beyond Gene Lists</h2>
+</section>
+<section id="enrichment-analysis" class="slide level2">
+<h2>Enrichment Analysis</h2>
+<ul>
+<li>In a differential expression analysis hundreds of genes are found differentially expressed between contasts. Manually inspecting such a large list of genes would be painful</li>
+<li>Functional Enrichment allows the inspection of functional terms that appear associated to the given set of differentially expressed genes more often than expected by chance</li>
+<li>The functional terms usually are associated to multiple genes. Thus, genes can be grouped into sets by shared functional terms.</li>
+<li>You have a list of genes DE expressed from an analysis you want to check if your genes are enriched for a particular set</li>
+<li>Count the number of genes in your DE list belonging to that set and compare them to the proportion of genes which belong to that set from the universe (e.g. your genome) using some statistical test</li>
+<li>It is important to have an agreed upon controlled vocabulary on the list of terms used to describe the functions of genes</li>
+</ul>
+<aside class="notes">
+<ul>
+<li>A simple and effective way to interpret the list of DE genes is to count the number of DE genes that are annotated with each possible GO term. GO terms that occur frequently in the list of DE genes are said to be over-represented or enriched.</li>
+<li><strong>Over-represented means that there are more DE genes in the category than we would expect given the size of the category and the gene length distribution so that would be enriched for DE genes.</strong></li>
+<li>Under-represented means that there are fewer DE genes in the category than we would expect by chance. The p-value relates to the probability of observing this number of DE genes in the category by chance.</li>
+<li>GO enrichment is done by looking at a set of genes labeled DE and seeing if there are more of them in a given GO category than one would expect, given the background non DE genes (without them, you’d have no way of knowing how likely/unlikely the observation is).</li>
+</ul>
+</aside>
+</section>
+<section id="ontology" class="slide level2">
+<h2>Ontology</h2>
+<ul>
+<li>An ontology is a specification of a conceptualization, a hierarchical mapping of concepts within a given frame of reference.</li>
+<li>An ontology is a restricted structured vocabulary of terms that represent domain knowledge.</li>
+<li>An ontology specifies a vocabulary that can be used to exchange queries and assertions in a consistent way.</li>
+</ul>
+</section>
+<section id="gene-ontology" class="slide level2">
+<h2>Gene Ontology</h2>
+<ul>
+<li>It is a controlled vocabulary of terms and descriptions for basic biological functions related to genes and gene product (RNA, proteins).</li>
+<li>It was designed and created by observing that similar genes in different organisms conserved a similar function.</li>
+<li>The Gene Ontology (GO) consortium, which provides a central repository for all organisms, produces three independent ontologies for gene products:
+<ul>
+<li><em>Molecular Function (MF)</em> describes the function carried out by the gene, such as binding or catalysis.</li>
+<li><em>Biological Process (BP)</em> a set of molecular functions, with a defined beginning and end, makes up a biological process. This describes biological phenomenon like DNA replication.</li>
+<li><em>Cellular Component (CC)</em> describes where in a cell a gene acts, what cellular unit the gene is part of.</li>
+</ul></li>
+</ul>
+</section>
+<section id="length-bias-in-rna-seq" class="slide level2">
+<h2>Length Bias in RNA-seq</h2>
+<ul>
+<li>For genes of the same expression level longer transcripts will have more reads</li>
+<li>Therefore there is more information for longer transcripts than shorter ones</li>
+<li>Longer genes have higher power to detect DE at a given threshold</li>
+</ul>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/goseq.png" alt="pwf" height="230" /> <img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/pwf.png" alt="pwf" height="230" /><br />
+<small> © Alicia Oshlack </small><br />
+- The x-axis of the pwf plot (on the right) are binned lengths of genes and the y-axis is the ratio of differentially detected genes.<br />
+- We can see a clear bias in the detection of differential expression with longer genes.</p>
+<aside class="notes">
+<ul>
+<li>Again, the aforementioned procedure has to be adapted to RNA-seq data peculiarity.</li>
+<li>Contrary to microarray where it is common to use a hypergeometrical test for estimate enrichement confidence, when you are dealing with RNA-seq data you have to take into account the length bias, i.e. the fact that longer transcript will have more reads.</li>
+</ul>
+</aside>
+</section>
+<section id="goseq" class="slide level2">
+<h2>GOseq</h2>
+<ul>
+<li>GOseq <sup>[*]</sup> is a method to conduct Gene Ontology (GO) analysis tailored to RNA-seq data as it accounts for the gene length bias in detection of over-representation (Young et al. 2010)<br />
+</li>
+<li>Three steps procedure:
+<ol type="1">
+<li>determine which genes are differentially expressed</li>
+<li>define a probability weighting function (<span class="math inline">\(pwf\)</span>)</li>
+<li>generate many random samples to produce a null distribution in order to calculate significance of a category</li>
+</ol>
+<ul>
+<li>Results:
+<ul>
+<li>Categories with short genes get a higher rank</li>
+<li>Categories with long genes get a lower rank</li>
+</ul></li>
+</ul></li>
+</ul>
+<p><small><sup>[*]</sup> Young, M. D., Wakefield, M. J., Smyth, G. K., Oshlack, A. (2010) Gene ontology analysis for RNA-seq: accounting for selection bias Genome Biology Date </small></p>
+<aside class="notes">
+<ul>
+<li>Fit a function to the binary data series 1=DE, 0=!DE</li>
+<li>We chose a spline with a monotonicity requirement Random Sampling: • Select a random set of genes the same size as the set of DE genes • However the probability of selec1ng a gene is weighted by the value of the probability weighting function (based on the length or read count of the gene) • Then count how many genes in the DE set have the GO category of interest • Repeat this many times • Calculate a p‐value for the category Results:</li>
+<li>Even for a small number of categories there are a significant number of discrepancies between the methods.</li>
+<li>Over all 20% different</li>
+</ul>
+</aside>
+</section>
+<section id="on-line-resources" class="slide level2">
+<h2>On Line Resources</h2>
+<ul>
+<li><p><a href="https://bioconductor.org/">Bioconductor</a></p></li>
+<li><p><a href="https://f1000research.com/gateways/bioconductor">F1000 Bioconductor Gateway</a></p></li>
+<li><p><a href="https://www.biostars.org/">Biostars</a></p></li>
+<li><p><a href="http://seqanswers.com/">Seqanswers</a></p></li>
+</ul>
+</section>
+<section id="section-4" class="slide level2" data-transition="zoom">
+<h2></h2>
+<p><em>Respect Netiquette rules!</em></p>
+<aside class="notes">
+<ul>
+<li>Be always humble with the researchers you are asking for help!</li>
+<li>Remember they are giving advice for free and taking time from their research in order to help you</li>
+<li>Try solutions before asking: You have to show your attempts before receiving help!</li>
+<li>of course there is google!</li>
+</ul>
+</aside>
+</section>
+<section id="acknowledgements" class="slide level2">
+<h2>Acknowledgements</h2>
+<p>I’d like to say thank you to <a href="http://tomsbiolab.com/team-members-collaborators">José Tomás Matus</a> for having me here and of course to my colleague <a href="https://www.fmach.it/eng/CRI/general-info/organisation/Chief-scientific-office/Computational-biology/MARCO-MORETTO">Marco Moretto</a> to keep <a href="http://vespucci.colombos.fmach.it/">Colombos/Vespucci</a> dream alive.</p>
+</section>
+<section id="section-5" class="slide level2" data-transition="zoom">
+<h2></h2>
+<p><em>Thank you for your attention!</em></p>
+</section>
+<section id="section-6" class="slide level2">
+<h2></h2>
+</section>
+<section id="extra-slides" class="slide level2">
+<h2>Extra Slides</h2>
+</section>
+<section id="microarrays-ma" class="slide level2">
+<h2>Microarrays (MA)</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/microrray_oldway.png" alt="microarray explained" /></p>
+</section>
+<section id="rna-seq-vs-microarray" class="slide level2">
+<h2>RNA-Seq vs Microarray</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/rna-seqvsma.png" alt="RNA-Seq replaced microarrrays" height="200" /></p>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/VespucciMAvsRNASeq.png" alt="vespucci" height="200" /></p>
+</section>
+<section id="rna-seq-vs-microarray-1" class="slide level2">
+<h2>RNA-Seq vs Microarray</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/rna-seqvsma2.png" alt="RNA-Seq vs Microarray" height="500" /></p>
+<aside class="notes">
+RNA-seq pro: - MA are preselected transcripts, NGS have not this problem you can discover new transcripts - Cost comparable to microarray for 20 million reads for sample (14 samples per lane)
+</aside>
+</section>
+<section id="single-end-vs.-paired-end-reading" class="slide level2">
+<h2>Single-end vs. paired-end reading</h2>
+<ul>
+<li>In single-end reading, the sequencer reads a fragment from only one end to the other, generating the sequence of base pairs.</li>
+<li>In paired-end reading it starts at one read, finishes this direction at the specified read length, and then starts another round of reading from the opposite end of the fragment.</li>
+<li>Paired-end reading improves the ability to identify the relative positions of various reads in the genome, making it much more effective than single-end reading in resolving structural rearrangements such as gene insertions, deletions, or inversions. It can also improve the assembly of repetitive regions.</li>
+<li>This degree of accuracy may not be required for all experiments, however, and paired-end reads are more expensive and time-consuming to perform than single-end reads.</li>
+</ul>
+</section>
+<section id="depth-of-coverage" class="slide level2">
+<h2>Depth of coverage</h2>
+<ul>
+<li>The depth of coverage is a measure of the number of times that a specific genomic site is sequenced during a sequencing run. In exome sequencing, for example, the target might be 60X coverage, meaning that — on average — each targeted base is sequenced 60 times. This does not mean that every targeted base is sequenced every time; some segments may be read 100 or more times, while others might only be read once or twice, or not at all. In exome sequencing our average target is that 85% of targeted bases are covered at least 15 times, and 90% of targeted bases are covered at least 10 times. The higher the number of times that a base is sequenced, the better the quality of the data.</li>
+<li>For RNA-seq, we generally recommend a minimum of 20 million reads per sample. For sequencing projects that require higher accuracy — such as studies of alternate splicing — 40 million to 60 million paired-end reads will provide better results. For more detailed analyses to determine, for example, allele-specific expression or expression of low-abundant transcripts, 60 million to 100 million reads may be required.</li>
+</ul>
+</section>
+<section id="fastq-format" class="slide level2">
+<h2>fastq format</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/fastq_explained.png" alt="fastq explained" height="250" /></p>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/fastq_explained2.png" alt="fastq explained 2" height="250" /></p>
+</section>
+<section id="rpkmfpkm-demo" class="slide level2">
+<h2>RPKM/FPKM DEMO</h2>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>Rep1</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gene A (2kb)</td>
+<td>10</td>
+<td>12</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>Gene B (4kb)</td>
+<td>20</td>
+<td>25</td>
+<td>60</td>
+</tr>
+<tr class="odd">
+<td>Gene C (1kb)</td>
+<td>5</td>
+<td>8</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td>Gene D (10kb)</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Total Read</td>
+<td>35</td>
+<td>45</td>
+<td>106</td>
+</tr>
+<tr class="even">
+<td>Tens of reads</td>
+<td>3.5</td>
+<td>4.5</td>
+<td>10.6</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>here we are scaling the 4 genes to the total reads counts by 10 instead of <span class="math inline">\(10^6\)</span></li>
+<li>scale per gene length (kb)</li>
+</ul>
+</section>
+<section id="rpkmfpkm-solution" class="slide level2">
+<h2>RPKM/FPKM SOLUTION</h2>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>Rep1</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gene A (2kb)</td>
+<td>2.86</td>
+<td>2.67</td>
+<td>2.83</td>
+</tr>
+<tr class="even">
+<td>Gene B (4kb)</td>
+<td>5.71</td>
+<td>5.55</td>
+<td>5.66</td>
+</tr>
+<tr class="odd">
+<td>Gene C (1kb)</td>
+<td>1.43</td>
+<td>1.78</td>
+<td>1.42</td>
+</tr>
+<tr class="even">
+<td>Gene D (10kb)</td>
+<td>0</td>
+<td>0</td>
+<td>0.09</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>Rep1</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gene A (2kb)</td>
+<td>1.43</td>
+<td>1.33</td>
+<td>1.42</td>
+</tr>
+<tr class="even">
+<td>Gene B (4kb)</td>
+<td>1.43</td>
+<td>1.39</td>
+<td>1.42</td>
+</tr>
+<tr class="odd">
+<td>Gene C (1kb)</td>
+<td>1.43</td>
+<td>1.78</td>
+<td>1.42</td>
+</tr>
+<tr class="even">
+<td>Gene D (10kb)</td>
+<td>0</td>
+<td>0</td>
+<td>0.009</td>
+</tr>
+</tbody>
+</table>
+<p><small>1) here we are scaling the 4 genes to the total reads counts by 10 instead of <span class="math inline">\(10^6\)</span> divide by the scaling factor each rep, e.g., 10/3.5=2.86 ,12/4.5=2.67,etc.</small></p>
+<p><small>2) scale per gene length (kb), e.g., 2.86/2=1.43, 5.71/4 = 1.33</small></p>
+</section>
+<section id="tpm-demo" class="slide level2">
+<h2>TPM DEMO</h2>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>Rep1</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gene A (2kb)</td>
+<td>10</td>
+<td>12</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>Gene B (4kb)</td>
+<td>20</td>
+<td>25</td>
+<td>60</td>
+</tr>
+<tr class="odd">
+<td>Gene C (1kb)</td>
+<td>5</td>
+<td>8</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td>Gene D (10kb)</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Total Read</td>
+<td>35</td>
+<td>45</td>
+<td>106</td>
+</tr>
+<tr class="even">
+<td>Tens of reads</td>
+<td>3.5</td>
+<td>4.5</td>
+<td>10.6</td>
+</tr>
+</tbody>
+</table>
+<p><small>1) normalize per gene length -&gt; Read per kylobase (RPK) </small></p>
+<p><small>2) normalize per new library size RPK </small></p>
+<p><small> - TPM tells you what proportion of reads mapped to which gene in each sample </small></p>
+<p><small> - RNA-seq is about comparing relative proportions of reads </small></p>
+</section>
+<section id="tpm-solution" class="slide level2">
+<h2>TPM SOLUTION</h2>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>Rep1 RPK</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gene A (2kb)</td>
+<td>5</td>
+<td>6</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td>Gene B (4kb)</td>
+<td>5</td>
+<td>6.25</td>
+<td>15</td>
+</tr>
+<tr class="odd">
+<td>Gene C (1kb)</td>
+<td>5</td>
+<td>8</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td>Gene D (10kb)</td>
+<td>0</td>
+<td>0</td>
+<td>0.1</td>
+</tr>
+<tr class="odd">
+<td>Total RPK</td>
+<td>15</td>
+<td>20.25</td>
+<td>45.1</td>
+</tr>
+<tr class="even">
+<td>Tens of RPK</td>
+<td>1.5</td>
+<td>2.025</td>
+<td>4.51</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>Rep1 RPK</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gene A (2kb)</td>
+<td>3.33</td>
+<td>2.96</td>
+<td>3.326</td>
+</tr>
+<tr class="even">
+<td>Gene B (4kb)</td>
+<td>3.33</td>
+<td>3.09</td>
+<td>3.326</td>
+</tr>
+<tr class="odd">
+<td>Gene C (1kb)</td>
+<td>3.33</td>
+<td>3.95</td>
+<td>3.326</td>
+</tr>
+<tr class="even">
+<td>Gene D (10kb)</td>
+<td>0</td>
+<td>0</td>
+<td>0.02</td>
+</tr>
+<tr class="odd">
+<td>Total</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="library-size-normalization-demo" class="slide level2">
+<h2>Library size normalization DEMO</h2>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>Rep1</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gene A</td>
+<td>9</td>
+<td>3</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td>Gene B</td>
+<td>72</td>
+<td>25</td>
+<td>35</td>
+</tr>
+<tr class="odd">
+<td>Gene C</td>
+<td>123</td>
+<td>40</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>Gene D</td>
+<td>1500</td>
+<td>504</td>
+<td>480</td>
+</tr>
+<tr class="odd">
+<td>Gene E</td>
+<td>2796</td>
+<td>928</td>
+<td>970</td>
+</tr>
+</tbody>
+</table>
+<p><small>If we look naively at the table above we can see that the the counts are much higher in Rep 1 than in Rep 2 and 3. However, this does not mean that the genes are expressed at a higher level in Rep 1. It most likely means that Rep 1 was sequenced more deeply than Reps 2 and 3. If we assume that this organism is a virus which only has five genes, we can take the total number of reads for each rep and see that there are three times as many reads for Rep 1 than for Reps 2 and 3:</small></p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Rep1</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Total</td>
+<td>4500</td>
+<td>1500</td>
+<td>1500</td>
+</tr>
+</tbody>
+</table>
+<p><small>So, a simple way to normalize the data is just to rescale it so that all of the counts are on the same scale. In this example we will simply divide the number of reads in Rep 1 by three: </small></p>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>Rep1</th>
+<th>Rep2</th>
+<th>Rep3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gene A</td>
+<td>3</td>
+<td>3</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td>Gene B</td>
+<td>24</td>
+<td>25</td>
+<td>35</td>
+</tr>
+<tr class="odd">
+<td>Gene C</td>
+<td>41</td>
+<td>40</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>Gene D</td>
+<td>500</td>
+<td>504</td>
+<td>480</td>
+</tr>
+<tr class="odd">
+<td>Gene E</td>
+<td>932</td>
+<td>928</td>
+<td>970</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="composition-bias-example-demo" class="slide level2">
+<h2>Composition Bias Example DEMO</h2>
+<table>
+<thead>
+<tr class="header">
+<th>genes</th>
+<th>group1</th>
+<th>group2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>gene1</td>
+<td>500</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>gene2</td>
+<td>500</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>gene3</td>
+<td>500</td>
+<td>1000</td>
+</tr>
+<tr class="even">
+<td>gene4</td>
+<td>500</td>
+<td>1000</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Each of the groups have 2000 counts, but if you took only library size into account, then all of the genes would be DE instead of just those for genes 1 and 2 (in a real example, there would be many many more genes like gene3 and gene4, of course).</li>
+<li>A correct normalization method should try to account for this sort of case and should produce a scaling factor of around 2 or so for group1.</li>
+<li><a href="https://www.biostars.org/p/83604/">Rna Composition Bias In Rna-Seq Analysis</a></li>
+</ul>
+</section>
+<section id="adjusted-p-value-control-of-the-fdr" class="slide level2">
+<h2>Adjusted P-Value – Control of the FDR</h2>
+<ul>
+<li>FDR aims to keep the total population of false positive rate below a threshold</li>
+<li>Control the FDR among the list of differentially expressed genes</li>
+<li>Assumption: all the N statistical tests are independent</li>
+<li>The Benjamini &amp; Hochberg algorithm transforms the N <em>raw p-values</em> in N <em>adjusted p-values</em></li>
+<li>Benjamini-Hochberg method <strong>It adjust p-value</strong> in a way that limit the number of false positive reported as ‘significant’, i.e., make the LARGER: e.g. before correction your p-value might be 0.04 after might be 0.06.</li>
+<li>if adjusted <span class="math inline">\(p-value \leq \alpha\)</span> then we reject <span class="math inline">\(H_0\)</span></li>
+<li>Take a look <a href="http://michelebusby.tumblr.com/post/26913184737/thinking-about-designing-rna-seq-experiments-to">here</a> for details.</li>
+</ul>
+<aside class="notes">
+<ul>
+<li>The adjusted values are often called q-values if the intention is to control or estimate the false discovery rate. The meaning of “BH” q-values is as follows. If all genes with q-value below athreshold, say 0.05, are selected as differentially expressed, then the expected proportion of false discoveries in the selected group is controlled to be less than the threshold value, in this case 5%.</li>
+</ul>
+</aside>
+</section>
+<section id="benjamini-hochberg-demo" class="slide level2">
+<h2>Benjamini-Hochberg DEMO</h2>
+<ul>
+<li>10 samples taken from the same distribution (not affected by the treatment): here p-values for the test <em>ordered</em> from smallest to larger (Step 0):</li>
+</ul>
+<table>
+<tbody>
+<tr class="odd">
+<td>p-values</td>
+<td>0.01</td>
+<td>0.11</td>
+<td>0.21</td>
+<td>0.31</td>
+<td>0.41</td>
+<td>0.51</td>
+<td>0.61</td>
+<td>0.71</td>
+<td>0.81</td>
+<td>0.91</td>
+</tr>
+<tr class="even">
+<td>rank</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+</tr>
+<tr class="odd">
+<td>adjpvalue</td>
+<td>0.1</td>
+<td>0.55</td>
+<td>0.70</td>
+<td>0.77</td>
+<td>0.82</td>
+<td>0.85</td>
+<td>0.87</td>
+<td>0.89</td>
+<td>0.9</td>
+<td>0.91</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Rank the p-value from 1 to 10 (here)</li>
+<li>the largest p-value and the largest FDR adjusted p-value 0.91 here is the same</li>
+<li>next largest adjusted p-value is the smaller between the previous value or the current p-value (0.81) times number of p-values (10 here) divided by the rank (9 here) and so on the 0.01 False positive became 0.01*10 = 0.1 not significant!</li>
+</ol>
+<aside class="notes">
+<ul>
+<li>0.01 is a false positive if we axpect that 5% of the number are false just by chance</li>
+</ul>
+</aside>
+</section>
+<section id="confusion-matrix" class="slide level2">
+<h2>Confusion Matrix</h2>
+<p><img data-src="/home/paolo/Dropbox/Teaching/2020/Valencia/Presentation/images/TPR.png" alt="Confusion" /></p>
+</section>
+<section id="double-threshold---why" class="slide level2">
+<h2>Double threshold - why?</h2>
+<ul>
+<li>The reported values are standard, non FDR-adjusted p-values. We do try to account for false positives, as that is in fact the reasoning (together with increasing the power of the tests) behind the DE genes selection via a ‘volcano’ plot as shown.</li>
+<li>instead of selecting a set of DE genes solely based on p-values, an additional cut-off is used on the corresponding ‘effects size’, which in our case is represented by the expression fold change (logFC). In this way, genes that only show tiny changes in expression but which are measured very consistently (and thus have small p-values) will not be included in the DE selection (the assumption being that these are rich in false positives), while conversely the p-value cut-off can be relaxed to include genes that show big changes in expression but with less consistent measurements (assumed to increase statistical power by including more true positives but little or no false negatives).</li>
+</ul>
+<aside class="notes">
+<ul>
+<li>While it is not unheard of to see FDR-adjusted p-values being used in a volcano plot setting, there is generally no objective advantage or point to it. That is because for most standard implementations:</li>
+</ul>
+<ol type="1">
+<li>The meaning of FDR-adjusted p-values would be lost. The interpretation of FDR-adjusted p-values is that they represent the expected proportion of false positives in the DE selection. Their calculation depends on an estimate of the proportion of positives in the entire data set. If an additional selection mechanism is used simultaneously (cut-off on the expression FC), this can be thought of as creating a smaller data set with a different proportion of positives (in fact the whole point behind it). As such, for any expression FC cut-off, all FDR-adjusted p-values would have to be recalculated based on an updated estimate of the proportion of positives in this data subset in order for the corrected p-values to not lose their interpretation of expected proportions of false positives in the DE selection. This is impractical, especially considering the fact that standard p-values are immune to this (they do not depend on an estimate of the proportion of positives in the data set, only on the assumptions of the null hypothesis) and the equivalence of the p-value rankings (see point 2).</li>
+<li>FDR-adjusted p-values are ensured to be monotonous with respect to the original p-values, that is to say, the ranking from best to worse p-values does not change. The top n genes are always the same for both approaches, and so DE selections made with either type of p-value are equivalent (although the actual cut-off would be different). To summarize: because FDR-adjusted p-values lose their meaning when applying a dual cut-off as in a volcano plot, and because DE selections based on either p-value are entirely equivalent (conserved ranking), we chose to report the original p-values whose interpretation holds regardless.</li>
+</ol>
+</aside>
+</section>
+    </div>
+  </div>
+
+  <script src="RNA-seq_Valencia_2020_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="RNA-seq_Valencia_2020_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display a presentation progress bar
+        progress: true,
+        // Display the page number of the current slide
+        slideNumber: false,
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: true,
+        // Opens links in an iframe preview overlay
+        previewLinks: true,
+        // Transition style
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        chalkboard: {
+          theme: 'whiteboard',
+        },
+
+        keyboard: {
+          67: function() { RevealChalkboard.toggleNotesCanvas() },    // toggle notes canvas when 'c' is pressed
+          66: function() { RevealChalkboard.toggleChalkboard() }, // toggle chalkboard when 'b' is pressed
+          46: function() { RevealChalkboard.clear() },    // clear chalkboard when 'DEL' is pressed
+           8: function() { RevealChalkboard.reset() },    // reset chalkboard data on current slide when 'BACKSPACE' is pressed
+          68: function() { RevealChalkboard.download() }, // downlad recorded chalkboard drawing when 'd' is pressed
+        },
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'RNA-seq_Valencia_2020_files/reveal.js-3.3.0.1/plugin/notes/notes.js', async: true },
+          { src: 'RNA-seq_Valencia_2020_files/reveal.js-3.3.0.1/plugin/search/search.js', async: true },
+          { src: 'RNA-seq_Valencia_2020_files/reveal.js-3.3.0.1/plugin/zoom-js/zoom.js', async: true },
+          { src: 'RNA-seq_Valencia_2020_files/reveal.js-3.3.0.1/plugin/chalkboard/chalkboard.js', async: true },
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>
