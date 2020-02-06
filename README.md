@@ -11,7 +11,10 @@ The rise of the latest technologies combining physics, optics, chemistry and its
 
 #### Contents
 ```
-day_* contains Jupyter Notebook and HTML files
+day_* contains 
+``` 
+Jupyter Notebook and HTML files
+```
 ena_submission_files contains the example files used for the submission to EBI - ENA repository
 isatab_example contains example file of Investigation Study Assay data-model
 jupyter_hub_docker contains the Docker file and Docker Compose file used to create the Jupyter Hub training environment
