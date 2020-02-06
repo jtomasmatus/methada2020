@@ -1,0 +1,7 @@
+project_accession	project_alias	sample_alias	library_name	library_source	library_selection	library_strategy	design_description	library_construction_protocol	instrument_model	file_type	library_layout	insert_size	forward_file_name	reverse_file_name
+sample_10		ERS4268930	unspecified	TRANSCRIPTOMIC	RANDOM	RNA-Seq			Illumina HiSeq 2500	fastq	PAIRED	200	sample_1_R1.fastq.gz	sample_1_R2.fastq.gz
+sample_11		ERS4268931	unspecified	TRANSCRIPTOMIC	RANDOM	RNA-Seq			Illumina HiSeq 2500	fastq	PAIRED	200	sample_2_R1.fastq.gz	sample_2_R2.fastq.gz
+sample_12		ERS4268932	unspecified	TRANSCRIPTOMIC	RANDOM	RNA-Seq			Illumina HiSeq 2500	fastq	PAIRED	200	sample_3_R1.fastq.gz	sample_3_R2.fastq.gz
+sample_13		ERS4268933	unspecified	TRANSCRIPTOMIC	RANDOM	RNA-Seq			Illumina HiSeq 2500	fastq	PAIRED	200	sample_4_R1.fastq.gz	sample_4_R2.fastq.gz
+sample_14		ERS4268934	unspecified	TRANSCRIPTOMIC	RANDOM	RNA-Seq			Illumina HiSeq 2500	fastq	PAIRED	200	sample_5_R1.fastq.gz	sample_5_R2.fastq.gz
+sample_15		ERS4268935	unspecified	TRANSCRIPTOMIC	RANDOM	RNA-Seq			Illumina HiSeq 2500	fastq	PAIRED	200	sample_6_R1.fastq.gz	sample_6_R2.fastq.gz
