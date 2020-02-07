@@ -1,0 +1,11 @@
+#checklist_accession	ERC000035											
+#unique_name_prefix												
+sample_alias	tax_id	scientific_name	common_name	sample_title	sample_description	dev_stage	organism part	growth condition	genotype	age	cultivar	experimental factor 1
+#template												
+#units												
+marco_moretto_sample_10	29760	Vitis vinifera	wine grape	berry_el36_1		EL_36	berry fruit		Vitis vinifera	5	Pinot noir	dev_stage
+marco_moretto_sample_11	29760	Vitis vinifera	wine grape	berry_el36_2		EL_36	berry fruit		Vitis vinifera	5	Pinot noir	dev_stage
+marco_moretto_sample_12	29760	Vitis vinifera	wine grape	berry_el36_3		EL_36	berry fruit		Vitis vinifera	5	Pinot noir	dev_stage
+marco_moretto_sample_13	29760	Vitis vinifera	wine grape	berry_el38_1		EL_38	berry fruit		Vitis vinifera	5	Pinot noir	dev_stage
+marco_moretto_sample_14	29760	Vitis vinifera	wine grape	berry_el38_2		EL_38	berry fruit		Vitis vinifera	5	Pinot noir	dev_stage
+marco_moretto_sample_15	29760	Vitis vinifera	wine grape	berry_el38_3		EL_38	berry fruit		Vitis vinifera	5	Pinot noir	dev_stage
